@@ -22,10 +22,10 @@ typedef std::map<std::string, DistanceFunction> distancesMap;
 typedef std::map<std::string, StorageHashTable> storageTypesMap;
 
 template <typename V>
-V get( const std::map<std::string,V> &m, const K &key, const V &default) {
+V get( const std::map<std::string,V> &m, const std::string &key, const V &def) {
     typename std::map<std::string,V>::const_iterator it = m.find( key );
     if ( it == m.end() ) {
-        return default;
+        return def;
     } else {
         return it->second;
     }
@@ -41,46 +41,46 @@ class LshParameterSetter {
         setDefaults();
     }
 
-    LSHConstructionParameters params() { return this->_p; }
+    LSHConstructionParameters params() { return _p; }
 
     LshParameterSetter& setDefaults(std::string distance="euclidean_squared") {
-        this->_p =
+        _p =
             get_default_parameters<Point>(_n, _d,
                                           get<DistanceFunction>(distances,
                                                                 distance,
-                                                                "unknown"),
+                                                                DistanceFunction::Unknown),
                                           true);
         return *this;
     }
 
     LshParameterSetter&  setDistance(std::string distance) {
-        this->_p.distance_function = get<DistanceFunction>(distances,
-                                                           distance,
-                                                           "unknown");
+        _p.distance_function = get<DistanceFunction>(distances,
+                                                     distance,
+                                                     DistanceFunction::Unknown);
         return *this;
     }
 
     LshParameterSetter& setHashes(int funcs, int tables, std::string storage) {
-        this->_p.k = funcs;
-        this->_p.l = tables;
-        this->_p.storage_hash_table =
-            get<StorageHashTable>(storageTypesMap, storage, "unknown");
+        _p.k = funcs;
+        _p.l = tables;
+        _p.storage_hash_table =
+            get<StorageHashTable>(storageTypes, storage, StorageHashTable::Unknown);
         return *this;
     }
 
     LshParameterSetter& setFamily(std::string family) {
-        this->_p.lsh_family = get<LSHFamily>(families, family, "unknown");
+        _p.lsh_family = get<LSHFamily>(families, family, LSHFamily::Unknown);
         return *this;
     }
 
     void dump() {
-        Rcout << "Sizes: " << n_ << ", " << d_ <<
-            " (" << p_.dimension << ")" << std::endl;
-        Rcout << "Hash k,l: " << p_.k << ", " << p_.l << std::endl;
+        Rcout << "Sizes: " << _n << ", " << _d <<
+            " (" << _p.dimension << ")" << std::endl;
+        Rcout << "Hash k,l: " << _p.k << ", " << _p.l << std::endl;
         Rcout << "Distance: ";
-        if ( p_.distance_function == DistanceFunction::EuclideanSquared ) {
+        if ( _p.distance_function == DistanceFunction::EuclideanSquared ) {
             Rcout << "Euclidean Squared";
-        } else if ( p_.distance_function == DistanceFunction::NegativeInnerProduct ) {
+        } else if ( _p.distance_function == DistanceFunction::NegativeInnerProduct ) {
             Rcout << "Negative Inner Product";
         } else {
             Rcout << "unknown";
@@ -88,9 +88,9 @@ class LshParameterSetter {
         Rcout << std::endl;
             
         Rcout << "Family: ";
-        if ( p_.lsh_family == LSHFamily::CrossPolytope ) {
+        if ( _p.lsh_family == LSHFamily::CrossPolytope ) {
             Rcout << "Cross Polytope";
-        } else if ( p_.lsh_famly == LSHFamily::Hyperplane ) {
+        } else if ( _p.lsh_family == LSHFamily::Hyperplane ) {
             Rcout << "Hyperplane";
         } else {
             Rcout << "unknown";
@@ -148,7 +148,7 @@ const storageTypesMap LshParameterSetter::storageTypes = {
 
 RCPP_EXPOSED_CLASS(LshParameterSetter)
 
-RCPP_MODULE(falconnr_module) {
+RCPP_MODULE(mod_params) {
     class_<LshParameterSetter>("LshParameterSetter")
 
     .constructor<int,int>()
