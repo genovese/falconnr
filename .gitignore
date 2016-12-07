@@ -1,0 +1,10 @@
+.Rproj.user
+.Rhistory
+.RData
+.*~
+*.log
+*.dvi
+*.aux
+.bonz*
+.DS_Store
+*.tgz
