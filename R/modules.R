@@ -1,12 +1,12 @@
 #' @useDynLib falconnr
 #' @import Rcpp
 
-Rcpp::loadModule("mod_params", TRUE)
-
-# Example use: 
+# Example use of mod_params: 
 #   p <- LshParameterSetter$new(n, d)
 #   p$dump()
-#   p$setDistance("negative_inner_product")$setFamily("hyperplane")$dump()
+#   p$distance("negative_inner_product")$family("hyperplane")$numHashFunctions(3)$numHashTables(2)$dump()
+
+Rcpp::loadModule("mod_params", TRUE)
 
 
 .onLoad <- function(libname, pkgname) {
