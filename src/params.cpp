@@ -3,20 +3,21 @@
 
 using namespace Rcpp;
 
-using falconn::construct_table;
-using falconn::compute_number_of_hash_functions;
-using falconn::DenseVector;
 using falconn::DistanceFunction;
-using falconn::LSHConstructionParameters;
 using falconn::LSHFamily;
-using falconn::LSHNearestNeighborTable;
 using falconn::StorageHashTable;
+using falconn::LSHConstructionParameters;
 using falconn::get_default_parameters;
 
 
-// Get value from string-keyed map with default value if missing
-//
-// 
+/// Get value from string-keyed map with default value if key is missing
+///  
+/// @param m    map from strings to V values
+/// @param key  string key
+/// @param def  default value to be returned when key is not in map
+///
+/// @return key's entry in map or def if not
+/// 
 template <typename V>
 V get( const std::map<std::string,V> &m, const std::string &key, const V &def) {
     typename std::map<std::string,V>::const_iterator it = m.find( key );
@@ -51,7 +52,7 @@ LshParameterSetter::LshParameterSetter(int n, int d) : _n(n), _d(d) {
     withDefaults();
 }
 
-LSHConstructionParameters LshParameterSetter::params() {
+LSHConstructionParameters LshParameterSetter::params() const {
     return _p;
 }
 
@@ -92,6 +93,12 @@ LshParameterSetter& LshParameterSetter::family(std::string family) {
     return *this;
 }
 
+LshParameterSetter& LshParameterSetter::rotations(int numRotations) {
+    _p.num_rotations = numRotations;
+    return *this;
+}
+
+
 void LshParameterSetter::dump() {
     Rcout << "Sizes: " << _n << ", " << _d <<
         " (" << _p.dimension << ")" << std::endl;
@@ -118,26 +125,6 @@ void LshParameterSetter::dump() {
 }
 
 
-
-//// 
-////
-//// [[Rcpp::export]]
-//SEXP lsh_parameters_default(SEXP n_, SEXP d_) {
-//    LshParameterSetter* p = new LshParameterSetter(as<int>(n_), as<int>(d_));
-// 
-//    return Rcpp::XPtr<LshParameterSetter> ptr(p, true);
-//}
-// 
-//// 
-////
-//// [[Rcpp::export]]
-//SEXP lsh_parameters_(SEXP n_, SEXP d_) {
-//    LshParameterSetter* p = new LshParameterSetter(as<int>(n_), as<int>(d_));
-// 
-//    return Rcpp::XPtr<LshParameterSetter> ptr(p, true);
-//}
-
-
 RCPP_EXPOSED_CLASS(LshParameterSetter)
 
 RCPP_MODULE(mod_params) {
@@ -153,10 +140,12 @@ RCPP_MODULE(mod_params) {
             "Set numbers of hash functions and tables")
     .method("numHashTables",   &LshParameterSetter::numHashTables,
             "Set numbers of hash functions and tables")
+    .method("storage",   &LshParameterSetter::storage,
+            "Set LSH Hash Table Storage type")
     .method("family",   &LshParameterSetter::family,
             "Set LSH Family")
-    .method("storage",   &LshParameterSetter::storage,
-            "Set LSH Family")
+    .method("rotations",   &LshParameterSetter::rotations,
+            "Number of rotations")
     .method("dump",        &LshParameterSetter::dump,
             "Check the values")
    ;

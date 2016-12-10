@@ -1,4 +1,4 @@
-// params.h -- R-exposed builder class for LSHConstructionParameters
+//! R-exposed builder class for LSHConstructionParameters
 
 #ifndef FALCONNR_PARAMS_H
 #define FALCONNR_PARAMS_H
@@ -21,7 +21,7 @@ class LshParameterSetter {
 
     LshParameterSetter(int n, int d);
 
-    falconn::LSHConstructionParameters params();
+    falconn::LSHConstructionParameters params() const;
 
     LshParameterSetter& withDefaults(std::string distance  = "euclidean_squared");
     LshParameterSetter& distance(std::string distance);
@@ -29,7 +29,7 @@ class LshParameterSetter {
     LshParameterSetter& numHashTables(int tables);
     LshParameterSetter& storage(std::string storage);
     LshParameterSetter& family(std::string family);
-
+    LshParameterSetter& rotations(int numRotations);
     void dump();
 
   private:
@@ -40,3 +40,7 @@ class LshParameterSetter {
 };
 
 #endif
+
+// Local Variables:
+// mode: c++
+// End:

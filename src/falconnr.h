@@ -11,3 +11,7 @@ typedef falconn::DenseVector<double> Point;
 
 
 #endif
+
+// Local Variables:
+// mode: c++
+// End:
