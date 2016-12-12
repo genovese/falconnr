@@ -30,7 +30,7 @@ class LshParameterSetter {
     LshParameterSetter& storage(std::string storage);
     LshParameterSetter& family(std::string family);
     LshParameterSetter& rotations(int numRotations);
-    void dump();
+    Rcpp::List asList();
 
   private:
 

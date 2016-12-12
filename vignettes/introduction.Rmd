@@ -1,0 +1,158 @@
+---
+title: "Introduction to FalconnR"
+author: "Christopher R. Genovese"
+date: "04 Dec 2016"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to FalconnR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+The FalconnR package provides an R/Rcpp interface to the
+[FALCONN](https://falconn-lib.org/) library for similarity
+search in high dimensions.
+
+The typical workflow for using the package is as follows:
+
+1. Optionally, create a configuration object to set non-default
+   behaviors for the locality-sensitive hashing algorithm.
+2. Create a search data structure around a fixed data matrix,
+   including any non-default configuration.
+3. Optimize the search parameter number of probes
+4. Pose queries to find data points similar to
+   (approximate nearest neighbors) each query point
+       
+Each search data structure is static: that is, associated with one and
+only one data set. Any changes or additions to the data set require
+creation of a new search data structure.
+
+## Configuring the search
+
+There are a variety of parameters governing the performance of the
+locality-sensitive hashing algorithm implemented by FALCONN.
+See [this tutorial](https://github.com/FALCONN-LIB/FALCONN/wiki/How-to-Use-FALCONN)
+and the documentation in this package for `cppDoc.LshParameterSetter`
+and `cppDoc.LshNnTable` for further details.
+
+Creating a search data structure, as described in the next section,
+sets default values for these parameters based on the size of
+the data matrix supplied. However, these can all be set individually
+by first creating and customizing a configuration object an
+passing it to the constructor for the search data table.
+Here, we describe how to create those non-default configurations.
+
+The `LshParameterSetter` is a builder class that can be configured
+by chained methods that each set a particular feature. Creating
+a parameter object initializes the configuration with the defaults
+for the given data size and dimension:
+
+    p <- LshParameterSetter$new(n, d)
+    
+You can examine the configuration using the `asList` method
+
+    p$asList()
+    
+which returns an R-style list.
+
+Chained updates of `p` look like:
+
+    p$distance("negative_inner_product")$family("hyperplane")$numHashFunctions(4)
+
+which mutates `p` in place. All of these methods *set* the corresponding
+configuration field.
+
+
+## Creating the Data Structure
+
+The package offers two mechanisms for creating the search data
+structure: a high level (but lightweight) S4 class and low level access
+to exposed C++ objects.
+
+The S4 class `LshTable` constructs all the necessary components from.
+Create an object of this class with either
+
+    search_table <- LshTable(X)
+
+or 
+
+    search_table <- new("LshTable", X)
+    
+where `X` is an `n` by `d` data matrix representing a collection of `n`
+points of dimension `d`.  This configures the search table with default
+settings. To use a different configuration, create an `LshParameterSetter`
+object, as described in the next section, and create the search
+table with either of the following
+
+    search_table <- LshTable(X, params)
+    search_table <- new("LshTable", X, params)
+
+
+## Optimizing the Search Parameters: Probes
+
+Most of the configuration settings must be set before creating the
+search data structure, but one important parameter can easily be set and
+tuned afterwards. Specifically, the FALCONN library uses multi-probe
+locality-sensitive hashing, and the number of probes can be set or reset
+at any time.
+
+Access to the methods for setting the number of probes is currently
+through direct access to the `table` slot of the `LshTable` object,
+although a better interface will be provided in a future version.
+
+The number of probes can be explicitly set with the `setNumProbes`
+method (see also `getNumProbes`):
+
+    search_table@table$setNumProbes(4)
+    search_table@table$getNumProbes()
+    
+Alternatively, given training data where the correct classifications
+are available, we can automatically set the number of probes
+to achieve at least a specified success probability on the training
+data.
+
+    probes <- search_table@table$tuneNumProbes(queries, answers, target_precision)
+    search_table@table$setNumProbes(probes)
+    
+where `queries` is a matrix where each *column* is a query point (**NB!**),
+`answers` is a vector of indices in the original data set corresponding to
+the true nearest neighbor for each query, `target_precision` is the
+minimum acceptable success probability on the training data. The method
+also accepts optinal initial values for the number of probes and for
+the maximum number of iterations in the search.
+
+
+## Search for query points
+
+The `similar` method of the `LshTable` object handles a variety of 
+similarity searches. Given a query point `q`, a vector with dimension
+equal to `search_table@table$dimension()`, we can find the (approximate)
+nearest neighbor in the data set by
+
+    similar(search_table, q)
+    
+which returns the *index* of the corresponding point in the data matrix
+(`search_table@X`). To return the points themselves, do 
+
+    similar(search_table, q, points=TRUE)
+    
+instead.
+
+To find the (approximate) 10 nearest neighbors, do
+
+    similar(search_table, q, k=10)
+    
+or similarly for other values of `k`. Again, this returns a vector
+of indices, set `points=TRUE` to get the points themselves.
+
+Finally, `similar` will perform approximate near-neighbor search 
+within a specified radius (in terms of the distance in the
+underlying configuration, Euclidean-squared by default):
+
+    similar(search_table, q, radius=17.4)
+    
+which again gives indices, or points if `points=TRUE`.
+
+
+
+

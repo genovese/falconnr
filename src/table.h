@@ -16,17 +16,14 @@ using falconn::PlainArrayPointSet;
 class LshNnTable {
   public:
     typedef falconn::LSHNearestNeighborTable<Point> FnnTable;
-    typedef std::unique_ptr<FnnTable>               FnnTablePtr;
+    typedef std::shared_ptr<FnnTable>               FnnTablePtr;
     typedef PlainArrayPointSet<double>              DataPoints;
 
     LshNnTable(const NumericMatrix tDataMatrix,
                const LshParameterSetter& params);
 
-    LshNnTable(LshNnTable const &) = delete;             // No copying
-    LshNnTable& operator=(LshNnTable const &) = delete;
-
-    LshNnTable(LshNnTable &&);                           // Move ok
-    LshNnTable& operator=(LshNnTable &&);
+    int dimension() const;
+    int size() const;
 
     IntegerVector find_nearest_neighbor(const NumericVector& q);
     IntegerVector find_k_nearest_neighbors(const NumericVector& q, int k);
@@ -49,7 +46,7 @@ class LshNnTable {
   private:
     FnnTablePtr                 _table;
     LSHConstructionParameters   _params;
-    DataPoints                  _data;
+    int                         _n_points;
 
     double      computeProbePrecision(const NumericMatrix queries,
                                       IntegerVector answers,

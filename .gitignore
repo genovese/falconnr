@@ -9,3 +9,4 @@
 .DS_Store
 *.tgz
 /TAGS
+inst/doc

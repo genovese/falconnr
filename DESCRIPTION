@@ -3,14 +3,19 @@ Title: A Wrapping API for the FALCONN Nearest Neighbor Search Library
 Version: 0.0.0.9000
 Authors@R: person("Christopher", "Genovese", email = "genovese@cmu.edu", role = c("aut", "cre"))
 Description: An R API that wraps the FALCONN library for nearest-neighbor search
-    using Locality-Sensitive Hashing (LSH). ATTN
+    using Locality-Sensitive Hashing (LSH). 
 Depends:
     R (>= 3.3.1)
-License: TBD
+License: MIT
 Encoding: UTF-8
 LazyData: true
 LinkingTo: Rcpp (>= 0.12.8), RcppEigen (>= 0.3.2.9.0)
 Imports:
     Rcpp,
-    RcppEigen
+    RcppEigen,
+    methods
 RoxygenNote: 5.0.1
+Suggests: testthat,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
