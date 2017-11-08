@@ -223,7 +223,7 @@ Rcpp::List LshParameterSetter::asList() {
 
 // Module mod_params exposes the LshParameterSetter class
 
-/* RCPP_EXPOSED_CLASS(LshParameterSetter) // Rcpp updates broke module import. Drop this? */
+RCPP_EXPOSED_CLASS(LshParameterSetter) 
 
 RCPP_MODULE(mod_params) {
     class_<LshParameterSetter>("LshParameterSetter")

@@ -315,8 +315,8 @@ int           LshNnTable::tuneNumProbes(const NumericMatrix queries,
     return num_probes;
 }
 
-/* RCPP_EXPOSED_CLASS(LshNnTable)
-RCPP_EXPOSED_CLASS(LshParameterSetter) */
+RCPP_EXPOSED_CLASS(LshNnTable)
+RCPP_EXPOSED_CLASS(LshParameterSetter)
 
 // Module mod_table exposes the LshNnTable class to R
 
