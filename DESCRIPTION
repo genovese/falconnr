@@ -1,7 +1,10 @@
 Package: falconnr
+Type: Package
 Title: A Wrapping API for the FALCONN Nearest Neighbor Search Library
-Version: 0.0.0.9000
+Version: 0.0.0.9001
+Author: Christopher R. Genovese
 Authors@R: person("Christopher", "Genovese", email = "genovese@cmu.edu", role = c("aut", "cre"))
+Maintainer: Christopher R. Genovese <genovese@cmu.edu>
 Description: An R API that wraps the FALCONN library for nearest-neighbor search
     using Locality-Sensitive Hashing (LSH). 
 Depends:
