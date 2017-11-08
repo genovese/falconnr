@@ -76,37 +76,37 @@ const LshParameterSetter::familiesMap LshParameterSetter::families = {
 };
 
 
-//' Construct an instance of an \code{LshParameterSetter}
-//'
-//' @param n  -- number of data points
-//' @param d  -- dimension of the data points
-//'
+// Construct an instance of an \code{LshParameterSetter}
+//
+// @param n  -- number of data points
+// @param d  -- dimension of the data points
+//
 LshParameterSetter::LshParameterSetter(int n, int d) : _n(n), _d(d) {
     withDefaults();
 }
 
 
-//' Returns a copy of the underlying parameters structure
-//'
-//' @seealso \code{\link{falconn/lsh_nn_table.h}}, specifically
-//' \code{struct LSHConstructionParameters} for details of the returned 
-//' structure.
-//'
-//' @return instance of \code{struct LSHConstructionParameters} representing
-//'         the underlying LSH parameters
-//'
+// Returns a copy of the underlying parameters structure
+//
+// @seealso \code{\link{falconn/lsh_nn_table.h}}, specifically
+// \code{struct LSHConstructionParameters} for details of the returned 
+// structure.
+//
+// @return instance of \code{struct LSHConstructionParameters} representing
+//         the underlying LSH parameters
+//
 LSHConstructionParameters LshParameterSetter::params() const {
     return _p;
 }
 
-//' Sets all parameters to their default values based on data size
-//'
-//' @param distance -- one of the strings: "negative_inner_product", 
-//'                    "euclidean_squared", or "unknown"; all other values
-//'                    lead to a setting of "unknown".
-//'
-//' @return a reference to the original object, enabling chaining
-//'
+// Sets all parameters to their default values based on data size
+//
+// @param distance -- one of the strings: "negative_inner_product", 
+//                    "euclidean_squared", or "unknown"; all other values
+//                    lead to a setting of "unknown".
+//
+// @return a reference to the original object, enabling chaining
+//
 LshParameterSetter& LshParameterSetter::withDefaults(std::string distance) {
     _p = get_default_parameters<Point>(_n, _d,
                                        get<DistanceFunction>(distances,
@@ -116,14 +116,14 @@ LshParameterSetter& LshParameterSetter::withDefaults(std::string distance) {
     return *this;
 }
 
-//' Sets the distance function used in similarity search
-//'
-//' @param distance -- one of the strings: "negative_inner_product", 
-//'                    "euclidean_squared", or "unknown"; all other values
-//'                    lead to a setting of "unknown".
-//'
-//' @return a reference to the original object, enabling chaining
-//'
+// Sets the distance function used in similarity search
+//
+// @param distance -- one of the strings: "negative_inner_product", 
+//                    "euclidean_squared", or "unknown"; all other values
+//                    lead to a setting of "unknown".
+//
+// @return a reference to the original object, enabling chaining
+//
 LshParameterSetter&  LshParameterSetter::distance(std::string distance) {
     _p.distance_function = get<DistanceFunction>(distances,
                                                  distance,
@@ -131,77 +131,77 @@ LshParameterSetter&  LshParameterSetter::distance(std::string distance) {
     return *this;
 }
 
-//' Sets the number of hash functions used in locality-sensitive hashing
-//'
-//' @param tables -- a positive integer, the number of hash functions
-//'                  to use in locality-sensitive hashing
-//'
-//' @return a reference to the original object, enabling chaining
-//'
+// Sets the number of hash functions used in locality-sensitive hashing
+//
+// @param tables -- a positive integer, the number of hash functions
+//                  to use in locality-sensitive hashing
+//
+// @return a reference to the original object, enabling chaining
+//
 LshParameterSetter& LshParameterSetter::numHashFunctions(int funcs) {
     _p.k = funcs;
     return *this;
 }
 
-//' Sets the number of hash tables used in locality-sensitive hashing
-//'
-//' @param tables -- a positive integer, the number of hash tables
-//'                  to use in locality-sensitive hashing
-//' @return a reference to the original object, enabling chaining
-//'
+// Sets the number of hash tables used in locality-sensitive hashing
+//
+// @param tables -- a positive integer, the number of hash tables
+//                  to use in locality-sensitive hashing
+// @return a reference to the original object, enabling chaining
+//
 LshParameterSetter& LshParameterSetter::numHashTables(int tables) {
     _p.l = tables;
     return *this;
 }
 
-//' Sets the storage mode used in similarity search
-//'
-//' @param storage -- one of the strings: "flat_hash_table",
-//'                   "bit_packed_flat_hash_table", "stl_hash_table",
-//'                   "linear_probing_hash_table", or "unknown"; 
-//'                   all other values lead to a setting of "unknown".
-//'
-//' @return a reference to the original object, enabling chaining
-//'
+// Sets the storage mode used in similarity search
+//
+// @param storage -- one of the strings: "flat_hash_table",
+//                   "bit_packed_flat_hash_table", "stl_hash_table",
+//                   "linear_probing_hash_table", or "unknown"; 
+//                   all other values lead to a setting of "unknown".
+//
+// @return a reference to the original object, enabling chaining
+//
 LshParameterSetter& LshParameterSetter::storage(std::string storage) {
     _p.storage_hash_table =
         get<StorageHashTable>(storageTypes, storage, StorageHashTable::Unknown);
     return *this;
 }
 
-//' Sets the family used for locality-sensitive hashing
-//'
-//' @param family -- one of the strings: "hyperplane", "cross_polytope",
-//'                  or "unknown"; all other values lead to a setting
-//'                  of "unknown".
-//'
-//' @return a reference to the original object, enabling chaining
-//'
+// Sets the family used for locality-sensitive hashing
+//
+// @param family -- one of the strings: "hyperplane", "cross_polytope",
+//                  or "unknown"; all other values lead to a setting
+//                  of "unknown".
+//
+// @return a reference to the original object, enabling chaining
+//
 LshParameterSetter& LshParameterSetter::family(std::string family) {
     _p.lsh_family = get<LSHFamily>(families, family, LSHFamily::Unknown);
     return *this;
 }
 
-//' Sets the number of pseudo-rotations used with cross-polytope hash
-//'
-//' For sparse data, a value of 2 is recommended; for dense data, 1.
-//' 
-//' @param rotations -- number of rotations to use
-//'                  or "unknown"; all other values lead to a setting
-//'                  of "unknown".
-//'
-//' @return a reference to the original object, enabling chaining
-//'
+// Sets the number of pseudo-rotations used with cross-polytope hash
+//
+// For sparse data, a value of 2 is recommended; for dense data, 1.
+// 
+// @param rotations -- number of rotations to use
+//                  or "unknown"; all other values lead to a setting
+//                  of "unknown".
+//
+// @return a reference to the original object, enabling chaining
+//
 LshParameterSetter& LshParameterSetter::rotations(int numRotations) {
     _p.num_rotations = numRotations;
     return *this;
 }
 
 
-//' Represents parameters as an R list
-//'
-//' @return R-list with names corresponding to the parameters
-//'
+// Represents parameters as an R list
+//
+// @return R-list with names corresponding to the parameters
+//
 Rcpp::List LshParameterSetter::asList() {
     return List::create(_["points"] = _n,
                         _["dimension"] = _d,
